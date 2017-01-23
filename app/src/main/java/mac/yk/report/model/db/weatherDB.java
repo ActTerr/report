@@ -60,7 +60,7 @@ public class weatherDB {
     }
     public List<Province> loadProvince(){
         db=openHelper.getReadableDatabase();
-        Cursor cursor=db.query(openHelper.DB_NAME,null,null,null,null,null,null);
+        Cursor cursor=db.query("Province",null,null,null,null,null,null);
         List<Province> list=new ArrayList<>();
         while(cursor.moveToNext()){
             Province province=new Province();
