@@ -13,11 +13,10 @@ import java.util.List;
 
 public class MyApplication extends Application {
     private static Context context;
-    private static List<Activity> list;
+    private static List<Activity> list=new ArrayList<>();
     @Override
     public void onCreate() {
         super.onCreate();
-        list=new ArrayList<>();
         context=getApplicationContext();
     }
     public static Context getContext(){

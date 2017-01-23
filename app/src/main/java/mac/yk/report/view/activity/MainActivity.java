@@ -1,8 +1,10 @@
 package mac.yk.report.view.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +26,7 @@ import mac.yk.report.model.util.HttpCallbackListener;
 import mac.yk.report.model.util.HttpUtil;
 import mac.yk.report.model.util.Utility;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private weatherDao weatherDao;
     private List<String> dataList = new ArrayList<String>();
+    boolean isFromWeatherActivity;
     /**
      * 省列表
      */
@@ -63,6 +66,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+        SharedPreferences prefs = PreferenceManager.
+                getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("city_selected", false)
+                && !isFromWeatherActivity) {
+            Intent intent = new Intent(this, CountyActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         initView();
     }
 
@@ -82,6 +95,13 @@ public class MainActivity extends AppCompatActivity {
                 }else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel==LEVEL_COUNTY){
+                    String countyCode = countyList.get(position).getCountyCode();
+                    Intent intent = new Intent(MainActivity.this,
+                            CountyActivity.class);
+                    intent.putExtra("county_code", countyCode);
+                    startActivity(intent);
+                    finish();
                 }
 
             }
@@ -204,7 +224,13 @@ public class MainActivity extends AppCompatActivity {
         } else if (currentLevel == LEVEL_CITY) {
             queryProvinces();
         } else {
-            finish();
+
+            if (isFromWeatherActivity) {
+                    Intent intent = new Intent(this, CountyActivity.class);
+                    startActivity(intent);
+                }
+                finish();
+
         } }
 
 }
