@@ -16,6 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.activity.CountyActivity"/>
+        <service android:name=".MyService"/>
+        <receiver android:name=".MyReceiver"/>
     </application>
 
 </manifest>
