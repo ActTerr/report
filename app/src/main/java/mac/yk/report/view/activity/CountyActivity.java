@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import mac.yk.report.MyService;
@@ -23,8 +24,11 @@ import mac.yk.report.model.util.Utility;
  */
 
 public class CountyActivity extends BaseActivity implements View.OnClickListener{
+    private Button btn1,btn2;
     private LinearLayout weatherInfoLayout;
     private TextView cityNameText;
+    RelativeLayout layout;
+    boolean flag;
     /**
      * 用于显示发布时间
      */
@@ -70,6 +74,18 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         refreshWeather = (Button) findViewById(R.id.refresh_weather);
         switchCity.setOnClickListener(this);
         refreshWeather.setOnClickListener(this);
+        btn1= (Button) findViewById(R.id.btn1);
+        btn1.setOnClickListener(this);
+        btn2= (Button) findViewById(R.id.btn2);
+        btn2.setOnClickListener(this);
+        layout= (RelativeLayout) findViewById(R.id.background);
+        SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
+        flag=sp.getBoolean("flag",false);
+        if (flag){
+            showstart();
+        }else {
+            showclose();
+        }
         String countyCode = getIntent().getStringExtra("county_code");
         if (!TextUtils.isEmpty(countyCode)) {
 // 有县级代号时就去查询天气
@@ -94,8 +110,10 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         currentDateText.setText(prefs.getString("current_date", ""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
-        Intent intent=new Intent(this, MyService.class);
-        startService(intent);
+        if (flag){
+            Intent intent=new Intent(this, MyService.class);
+            startService(intent);
+        }
     }
 
     private void queryWeatherCode(String countyCode) {
@@ -157,9 +175,36 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
                     queryWeatherInfo(weatherCode);
                 }
                 break;
+            case R.id.btn1:
+                showstart();
+                flag=true;
+                saveFlag(flag);
+                break;
+            case R.id.btn2:
+                showclose();
+                flag=false;
+                saveFlag(flag);
+                break;
             default:
                 break;
         }
+    }
+
+    private void showclose() {
+        btn1.setVisibility(View.VISIBLE);
+        btn2.setVisibility(View.GONE);
+        layout.setBackgroundColor(getResources().getColor(R.color.white));
+    }
+
+    private void showstart() {
+        btn1.setVisibility(View.GONE);
+        btn2.setVisibility(View.VISIBLE);
+        layout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+    }
+
+    private void saveFlag(boolean flag) {
+        SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
+        sp.edit().putBoolean("flag",flag).commit();
     }
 
     private void queryWeatherInfo(String weatherCode) {
