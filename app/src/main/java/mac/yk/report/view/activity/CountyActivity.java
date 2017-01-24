@@ -28,7 +28,7 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
     private Button btn1,btn2;
     private LinearLayout weatherInfoLayout;
     private TextView cityNameText;
-    RelativeLayout layout;
+    RelativeLayout layout,back;
     boolean flag;
     /**
      * 用于显示发布时间
@@ -82,6 +82,7 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         btn2.setOnClickListener(this);
         layout= (RelativeLayout) findViewById(R.id.background);
         time= (EditText) findViewById(R.id.et_time);
+        back= (RelativeLayout) findViewById(R.id.back);
         SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
         flag=sp.getBoolean("flag",false);
         time.setText(sp.getInt("time",0)+"");
@@ -109,6 +110,10 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         cityNameText.setText( prefs.getString("city_name", ""));
         temp1Text.setText(prefs.getString("temp1", ""));
         temp2Text.setText(prefs.getString("temp2", ""));
+        String weather=prefs.getString("weather_desp", "");
+        if (weather.equals("晴")){
+            back.setBackground(getResources().getDrawable(R.drawable.a));
+        }
         weatherDespText.setText(prefs.getString("weather_desp", ""));
         publishText.setText("今天" + prefs.getString("publish_time", "") + "发布");
         currentDateText.setText(prefs.getString("current_date", ""));
