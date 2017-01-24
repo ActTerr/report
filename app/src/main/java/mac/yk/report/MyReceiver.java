@@ -16,7 +16,6 @@ public class MyReceiver extends BroadcastReceiver {
         SharedPreferences sp= PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
         boolean flag=sp.getBoolean("flag",false);
         if (flag){
-
             Intent intent1=new Intent(context, MyService.class);
             context.startService(intent1);
         }

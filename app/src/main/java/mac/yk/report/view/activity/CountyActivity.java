@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
      */
     private Button refreshWeather;
 
+    private EditText time;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,8 +81,10 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         btn2= (Button) findViewById(R.id.btn2);
         btn2.setOnClickListener(this);
         layout= (RelativeLayout) findViewById(R.id.background);
+        time= (EditText) findViewById(R.id.et_time);
         SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
         flag=sp.getBoolean("flag",false);
+        time.setText(sp.getInt("time",0)+"");
         if (flag){
             showstart();
         }else {
@@ -179,11 +183,18 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
                 showstart();
                 flag=true;
                 saveFlag(flag);
+                Intent in=new Intent(this,MyService.class);
+                int t= Integer.parseInt(time.getText().toString());
+                SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
+                sp.edit().putInt("time",t).apply();
+                startService(in);
                 break;
             case R.id.btn2:
                 showclose();
                 flag=false;
                 saveFlag(flag);
+                Intent in2=new Intent(this,MyService.class);
+                stopService(in2);
                 break;
             default:
                 break;

@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import mac.yk.report.model.util.HttpCallbackListener;
 import mac.yk.report.model.util.HttpUtil;
@@ -19,6 +20,7 @@ import mac.yk.report.model.util.Utility;
  */
 
 public class MyService extends Service {
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,12 +36,22 @@ public class MyService extends Service {
             }
         }).start();
         AlarmManager manager= (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour = 8 * 60 * 60 * 1000;
+        SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(this);
+       int t= sharedPreferences.getInt("time",0);
+        int anHour=0;
+        if (t==0){
+             anHour= 8 * 60 * 60 * 1000;
+        }else {
+            anHour=t*60*60*1000;
+        }
+
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i=new Intent(this,MyReceiver.class);
         PendingIntent pi=PendingIntent.getBroadcast(this,0,i,0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,triggerAtTime,pi);
+        Log.e("main","service start"+anHour);
         return super.onStartCommand(intent, flags, startId);
+
     }
 
     private void updateWeather() {
@@ -58,5 +70,11 @@ public class MyService extends Service {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("main","service stop");
     }
 }
