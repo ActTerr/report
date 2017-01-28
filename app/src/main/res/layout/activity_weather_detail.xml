@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <mac.yk.report.view.widget.MyViewPager
+        android:id="@+id/mv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </mac.yk.report.view.widget.MyViewPager>
+    <mac.yk.report.view.widget.FlowIndicator
+        android:id="@+id/fl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:count="1"
+        app:focus_color="#f00"
+        app:normal_color="#ccc"
+        app:r="10dp"
+        app:space="8dp"
+        />
+</RelativeLayout>

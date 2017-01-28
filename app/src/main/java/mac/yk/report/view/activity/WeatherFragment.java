@@ -1,13 +1,18 @@
 package mac.yk.report.view.activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -24,7 +29,7 @@ import mac.yk.report.model.util.Utility;
  * Created by mac-yk on 2017/1/23.
  */
 
-public class CountyActivity extends BaseActivity implements View.OnClickListener{
+public class WeatherFragment extends Fragment implements View.OnClickListener{
     private Button btn1,btn2;
     private LinearLayout weatherInfoLayout;
     private TextView cityNameText;
@@ -60,30 +65,35 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
     private Button refreshWeather;
 
     private EditText time;
+    private Activity mContext;
+    public WeatherFragment(Context context) {
+        context=mContext;
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_county);
-// 初始化各控件
-        weatherInfoLayout = (LinearLayout) findViewById(R.id.weather_info_layout);
-        cityNameText = (TextView) findViewById(R.id.city_name);
-        publishText = (TextView) findViewById(R.id.publish_text);
-        weatherDespText = (TextView) findViewById(R.id.weather_desp);
-        temp1Text = (TextView) findViewById(R.id.temp1);
-        temp2Text = (TextView) findViewById(R.id.temp2);
-        currentDateText = (TextView) findViewById(R.id.current_date);
-        switchCity = (Button) findViewById(R.id.switch_city);
-        refreshWeather = (Button) findViewById(R.id.refresh_weather);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // 初始化各控件
+        View view = inflater.inflate(R.layout.activity_county, container);
+        weatherInfoLayout = (LinearLayout) view.findViewById(R.id.weather_info_layout);
+        cityNameText = (TextView) view.findViewById(R.id.city_name);
+        publishText = (TextView) view.findViewById(R.id.publish_text);
+        weatherDespText = (TextView) view.findViewById(R.id.weather_desp);
+        temp1Text = (TextView) view.findViewById(R.id.temp1);
+        temp2Text = (TextView) view.findViewById(R.id.temp2);
+        currentDateText = (TextView) view.findViewById(R.id.current_date);
+        switchCity = (Button) view.findViewById(R.id.switch_city);
+        refreshWeather = (Button) view.findViewById(R.id.refresh_weather);
         switchCity.setOnClickListener(this);
         refreshWeather.setOnClickListener(this);
-        btn1= (Button) findViewById(R.id.btn1);
+        btn1= (Button) view.findViewById(R.id.btn1);
         btn1.setOnClickListener(this);
-        btn2= (Button) findViewById(R.id.btn2);
+        btn2= (Button) view.findViewById(R.id.btn2);
         btn2.setOnClickListener(this);
-        layout= (RelativeLayout) findViewById(R.id.background);
-        time= (EditText) findViewById(R.id.et_time);
-        back= (RelativeLayout) findViewById(R.id.back);
-        SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
+        layout= (RelativeLayout) view.findViewById(R.id.background);
+        time= (EditText) view.findViewById(R.id.et_time);
+        back= (RelativeLayout) view.findViewById(R.id.back);
+        SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(mContext);
         flag=sp.getBoolean("flag",false);
         time.setText(sp.getInt("time",0)+"");
         if (flag){
@@ -91,22 +101,26 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         }else {
             showclose();
         }
-        String countyCode = getIntent().getStringExtra("county_code");
+        String countyCode = mContext.getIntent().getStringExtra("county_code");
         if (!TextUtils.isEmpty(countyCode)) {
 // 有县级代号时就去查询天气
- publishText.setText("同步中...");
- weatherInfoLayout.setVisibility(View.INVISIBLE);
+            publishText.setText("同步中...");
+            weatherInfoLayout.setVisibility(View.INVISIBLE);
             cityNameText.setVisibility(View.INVISIBLE);
             queryWeatherCode(countyCode);
         } else {
 // 没有县级代号时就直接显示本地天气
- showWeather();
+            showWeather();
         }
+        return view;
     }
+
+
+
 
     private void showWeather() {
         SharedPreferences prefs = PreferenceManager.
-                getDefaultSharedPreferences(this);
+                getDefaultSharedPreferences(mContext);
         cityNameText.setText( prefs.getString("city_name", ""));
         temp1Text.setText(prefs.getString("temp1", ""));
         temp2Text.setText(prefs.getString("temp2", ""));
@@ -120,8 +134,8 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
         if (flag){
-            Intent intent=new Intent(this, MyService.class);
-            startService(intent);
+            Intent intent=new Intent(mContext, MyService.class);
+            mContext.startService(intent);
         }
     }
 
@@ -144,8 +158,8 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
                         }
                     }
                 }else if ("weatherCode".equals(countyCode)){
-                    Utility.handleWeatherResponse(CountyActivity.this,response);
-                    runOnUiThread(new Runnable() {
+                    Utility.handleWeatherResponse(mContext,response);
+                    mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             showWeather();
@@ -156,7 +170,7 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
 
             @Override
             public void error(Exception e) {
-                runOnUiThread(new Runnable() {
+                mContext.runOnUiThread(new Runnable() {
                     @Override
                     public void run() { publishText.setText("同步失败");
                     } });
@@ -169,16 +183,16 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
         switch(v.getId()){
             case R.id.switch_city:
                 Log.e("main","dianjici");
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(mContext, MainActivity.class);
                 intent.putExtra("from_weather_activity", true);
                 startActivity(intent);
-                finish();
+                mContext.finish();
                 break;
             case R.id.refresh_weather:
                 Log.e("main","dianjiwe");
                 publishText.setText("同步中...");
                 SharedPreferences prefs = PreferenceManager.
-                        getDefaultSharedPreferences(this);
+                        getDefaultSharedPreferences(mContext);
                 String weatherCode = prefs.getString("weather_code", "");
                 if (!TextUtils.isEmpty(weatherCode)) {
                     queryWeatherInfo(weatherCode);
@@ -188,18 +202,18 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
                 showstart();
                 flag=true;
                 saveFlag(flag);
-                Intent in=new Intent(this,MyService.class);
+                Intent in=new Intent(mContext,MyService.class);
                 int t= Integer.parseInt(time.getText().toString());
-                SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(mContext);
                 sp.edit().putInt("time",t).apply();
-                startService(in);
+                mContext.startService(in);
                 break;
             case R.id.btn2:
                 showclose();
                 flag=false;
                 saveFlag(flag);
-                Intent in2=new Intent(this,MyService.class);
-                stopService(in2);
+                Intent in2=new Intent(mContext,MyService.class);
+                mContext.stopService(in2);
                 break;
             default:
                 break;
@@ -219,7 +233,7 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void saveFlag(boolean flag) {
-        SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(mContext);
         sp.edit().putBoolean("flag",flag).commit();
     }
 
@@ -230,10 +244,6 @@ public class CountyActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
 
-    }
 }
 

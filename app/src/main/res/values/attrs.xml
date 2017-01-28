@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FlowIndicator">
+        <!-- 圆的数量-->
+        <attr name="count" format="integer" />
+        <!-- 圆半径-->
+        <attr name="r" format="dimension" />
+        <!-- 实心圆的间距-->
+        <attr name="space" format="dimension" />
+
+        <!-- 非焦点的圆的颜色-->
+        <attr name="normal_color" format="reference|color" />
+        <!-- 焦点圆的颜色-->
+        <attr name="focus_color" format="reference|color" />
+    </declare-styleable>
+</resources>
