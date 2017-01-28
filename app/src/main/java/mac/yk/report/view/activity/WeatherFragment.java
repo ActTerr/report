@@ -23,6 +23,7 @@ import mac.yk.report.MyService;
 import mac.yk.report.R;
 import mac.yk.report.model.util.HttpCallbackListener;
 import mac.yk.report.model.util.HttpUtil;
+import mac.yk.report.model.util.SpUtil;
 import mac.yk.report.model.util.Utility;
 
 /**
@@ -62,12 +63,15 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
     /**
      * 更新天气按钮
      */
-    private Button refreshWeather;
+    private Button refreshWeather,goList;
 
     private EditText time;
     private Activity mContext;
-    public WeatherFragment(Context context) {
-        context=mContext;
+
+    private int index;
+    public WeatherFragment(Context context,int index) {
+        mContext= (Activity) context;
+        this.index=index;
     }
 
     @Nullable
@@ -90,6 +94,8 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         btn1.setOnClickListener(this);
         btn2= (Button) view.findViewById(R.id.btn2);
         btn2.setOnClickListener(this);
+        goList= (Button) view.findViewById(R.id.btn_goList);
+        goList.setOnClickListener(this);
         layout= (RelativeLayout) view.findViewById(R.id.background);
         time= (EditText) view.findViewById(R.id.et_time);
         back= (RelativeLayout) view.findViewById(R.id.back);
@@ -115,12 +121,8 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         return view;
     }
 
-
-
-
     private void showWeather() {
-        SharedPreferences prefs = PreferenceManager.
-                getDefaultSharedPreferences(mContext);
+        SharedPreferences prefs = SpUtil.getSp2(mContext, index);
         cityNameText.setText( prefs.getString("city_name", ""));
         temp1Text.setText(prefs.getString("temp1", ""));
         temp2Text.setText(prefs.getString("temp2", ""));
@@ -158,7 +160,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
                         }
                     }
                 }else if ("weatherCode".equals(countyCode)){
-                    Utility.handleWeatherResponse(mContext,response);
+                    Utility.handleWeatherResponse(mContext,response,index);
                     mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -215,6 +217,9 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
                 Intent in2=new Intent(mContext,MyService.class);
                 mContext.stopService(in2);
                 break;
+            case R.id.btn_goList:
+                Intent inte=new Intent(mContext,weatherListActivity.class);
+                startActivity(inte);
             default:
                 break;
         }

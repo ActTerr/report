@@ -1,8 +1,8 @@
 package mac.yk.report.model.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -74,7 +74,7 @@ public class Utility {
         }
         return false;
     }
-    public static void handleWeatherResponse(Context context,String response){
+    public static void handleWeatherResponse(Context context,String response,int index){
         try {
             JSONObject object=new JSONObject(response);
             JSONObject weatherInfo = object.getJSONObject("weatherinfo");
@@ -85,7 +85,7 @@ public class Utility {
             String weatherDesp = weatherInfo.getString("weather");
             String publishTime = weatherInfo.getString("ptime");
             saveWeatherInfo(context, cityName, weatherCode, temp1, temp2,
-                    weatherDesp, publishTime);
+                    weatherDesp, publishTime,index);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -93,10 +93,10 @@ public class Utility {
     }
 
     private static void saveWeatherInfo(Context context, String cityName, String weatherCode,
-                                        String temp1, String temp2, String weatherDesp, String publishTime) {
+                                        String temp1, String temp2, String weatherDesp,
+                                        String publishTime,int index) {
         SimpleDateFormat format=new SimpleDateFormat("yyyy年M月d日", Locale.CHINA);
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
+        SharedPreferences.Editor editor = SpUtil.getSp2((Activity) context,index).edit();
         editor.putBoolean("city_selected", true);
         editor.putString("city_name", cityName);
         editor.putString("weather_code", weatherCode);
@@ -105,6 +105,6 @@ public class Utility {
         editor.putString("weather_desp", weatherDesp);
         editor.putString("publish_time", publishTime);
         editor.putString("current_date", format.format(new Date()));
-        editor.commit();
+        editor.apply();
     }
 }

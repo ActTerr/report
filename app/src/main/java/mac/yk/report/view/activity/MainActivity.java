@@ -24,6 +24,8 @@ import mac.yk.report.model.bean.Province;
 import mac.yk.report.model.db.weatherDao;
 import mac.yk.report.model.util.HttpCallbackListener;
 import mac.yk.report.model.util.HttpUtil;
+import mac.yk.report.model.util.LogUtil;
+import mac.yk.report.model.util.SpUtil;
 import mac.yk.report.model.util.Utility;
 
 public class MainActivity extends BaseActivity {
@@ -71,7 +73,7 @@ public class MainActivity extends BaseActivity {
                 getDefaultSharedPreferences(this);
         if (prefs.getBoolean("city_selected", false)
                 && !isFromWeatherActivity) {
-            Intent intent = new Intent(this, CountyActivity.class);
+            Intent intent = new Intent(this, WeatherDetailActivity.class);
             startActivity(intent);
             finish();
             return;
@@ -98,9 +100,15 @@ public class MainActivity extends BaseActivity {
                 }else if (currentLevel==LEVEL_COUNTY){
                     String countyCode = countyList.get(position).getCountyCode();
                     Intent intent = new Intent(MainActivity.this,
-                            CountyActivity.class);
+                            WeatherDetailActivity.class);
                     intent.putExtra("county_code", countyCode);
+                    SharedPreferences sp = SpUtil.getDefault(getApplicationContext());
+                    int count = sp.getInt("count", 0);
+                    sp.edit().putInt("count",count+1).apply();
                     startActivity(intent);
+                    LogUtil.e("main","已经启动");
+
+
                     finish();
                 }
 
@@ -226,7 +234,7 @@ public class MainActivity extends BaseActivity {
         } else {
 
             if (isFromWeatherActivity) {
-                    Intent intent = new Intent(this, CountyActivity.class);
+                    Intent intent = new Intent(this, WeatherDetailActivity.class);
                     startActivity(intent);
                 }
                 finish();

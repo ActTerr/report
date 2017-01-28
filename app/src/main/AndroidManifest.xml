@@ -16,6 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.activity.WeatherDetailActivity"/>
+        <activity android:name=".view.activity.weatherListActivity"/>
         <service android:name=".MyService"/>
         <receiver android:name=".MyReceiver"/>
     </application>

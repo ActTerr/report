@@ -13,6 +13,7 @@ import android.util.Log;
 
 import mac.yk.report.model.util.HttpCallbackListener;
 import mac.yk.report.model.util.HttpUtil;
+import mac.yk.report.model.util.SpUtil;
 import mac.yk.report.model.util.Utility;
 
 /**
@@ -32,7 +33,11 @@ public class MyService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                updateWeather();
+               int count= SpUtil.getDefault(getApplicationContext()).getInt("count",0);
+                for (int i=0;i<count;i++){
+                    updateWeather(i);
+                }
+
             }
         }).start();
         AlarmManager manager= (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -54,7 +59,7 @@ public class MyService extends Service {
 
     }
 
-    private void updateWeather() {
+    private void updateWeather(final int i) {
         SharedPreferences sp= PreferenceManager.getDefaultSharedPreferences(this);
         String code=sp.getString("weather_code","");
         String address = "http://www.weather.com.cn/data/cityinfo/" +
@@ -62,7 +67,7 @@ public class MyService extends Service {
         HttpUtil.sendRequest(address, new HttpCallbackListener() {
             @Override
             public void finish(String response) {
-                Utility.handleWeatherResponse(getApplicationContext(),response);
+                Utility.handleWeatherResponse(getApplicationContext(),response,i);
             }
 
             @Override

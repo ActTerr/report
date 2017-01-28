@@ -57,4 +57,12 @@ public class Weather implements Parcelable {
         dest.writeString(location);
         dest.writeInt(temperature);
     }
+
+    @Override
+    public String toString() {
+        return "Weather{" +
+                "location='" + location + '\'' +
+                ", temperature=" + temperature +
+                '}';
+    }
 }
