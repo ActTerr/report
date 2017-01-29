@@ -23,6 +23,7 @@ import mac.yk.report.MyService;
 import mac.yk.report.R;
 import mac.yk.report.model.util.HttpCallbackListener;
 import mac.yk.report.model.util.HttpUtil;
+import mac.yk.report.model.util.LogUtil;
 import mac.yk.report.model.util.SpUtil;
 import mac.yk.report.model.util.Utility;
 
@@ -78,7 +79,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // 初始化各控件
-        View view = inflater.inflate(R.layout.activity_county, container);
+        View view = inflater.inflate(R.layout.activity_county, container,false);
         weatherInfoLayout = (LinearLayout) view.findViewById(R.id.weather_info_layout);
         cityNameText = (TextView) view.findViewById(R.id.city_name);
         publishText = (TextView) view.findViewById(R.id.publish_text);
@@ -116,13 +117,15 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
             queryWeatherCode(countyCode);
         } else {
 // 没有县级代号时就直接显示本地天气
-            showWeather();
+            showWeather(index);
         }
+        LogUtil.e("main","fg success");
         return view;
     }
 
-    private void showWeather() {
-        SharedPreferences prefs = SpUtil.getSp2(mContext, index);
+
+    public void showWeather(int in) {
+        SharedPreferences prefs = SpUtil.getSp2(mContext, in);
         cityNameText.setText( prefs.getString("city_name", ""));
         temp1Text.setText(prefs.getString("temp1", ""));
         temp2Text.setText(prefs.getString("temp2", ""));
@@ -135,10 +138,10 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         currentDateText.setText(prefs.getString("current_date", ""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
-        if (flag){
-            Intent intent=new Intent(mContext, MyService.class);
-            mContext.startService(intent);
-        }
+//        if (flag){
+//            Intent intent=new Intent(mContext, MyService.class);
+//            mContext.startService(intent);
+//        }
     }
 
     private void queryWeatherCode(String countyCode) {
@@ -164,7 +167,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
                     mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showWeather();
+                            showWeather(index);
                         }
                     });
                 }
@@ -204,11 +207,9 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
                 showstart();
                 flag=true;
                 saveFlag(flag);
-                Intent in=new Intent(mContext,MyService.class);
                 int t= Integer.parseInt(time.getText().toString());
                 SharedPreferences sp=PreferenceManager.getDefaultSharedPreferences(mContext);
                 sp.edit().putInt("time",t).apply();
-                mContext.startService(in);
                 break;
             case R.id.btn2:
                 showclose();

@@ -1,9 +1,11 @@
 package mac.yk.report.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 
+import mac.yk.report.MyService;
 import mac.yk.report.R;
 import mac.yk.report.model.util.LogUtil;
 import mac.yk.report.model.util.SpUtil;
@@ -21,7 +23,8 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
     MainTabAdpter adapter;
     int currentIndex;
     int count;
-
+    boolean flag;
+    WeatherFragment weatherFragment=new WeatherFragment(this, count);;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,16 +40,31 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
         LogUtil.e("main",count+"");
         mv.setOffscreenPageLimit(count);
         adapter = new MainTabAdpter(getSupportFragmentManager());
+        adapter.clear();
         if (count > 0) {
             for (int i = 0; i < count; i++) {
-                adapter.addFragment(new WeatherFragment(this, count));
+                adapter.addFragment(new WeatherFragment(this,i));
+                LogUtil.e("main","addFragment i");
             }
         }
+
         mv.setAdapter(adapter);
         mv.setCurrentItem(currentIndex);
         mv.setOnPageChangeListener(this);
         fl.setCount(count);
+//        fl.setFocus(currentIndex);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        flag=SpUtil.getDefault(this).getBoolean("flag",false);
+        if (flag){
+            Intent in=new Intent(this,MyService.class);
+
+            startService(in);
+        }
     }
 
     @Override
@@ -59,6 +77,7 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
         currentIndex = position;
         mv.setCurrentItem(currentIndex);
         fl.setFocus(position);
+        weatherFragment.showWeather(position);
     }
 
     @Override
