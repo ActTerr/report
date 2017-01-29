@@ -115,7 +115,7 @@ public class Utility {
             editor.apply();
             SharedPreferences sp = SpUtil.getSp(context, index);
             Log.e("main","save"+index);
-            SpUtil.putValue(sp,cityName, Integer.parseInt(temp1.substring(1,2)));
+            SpUtil.putValue(sp,cityName, temp1+temp2);
         }catch (Exception e){
 
             SharedPreferences sharedPreferences = SpUtil.getDefault(context);

@@ -17,8 +17,8 @@ public class SpUtil {
         return sharedPreferences;
     }
 
-    public static int getTem(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getInt("tem", 100);
+    public static String getTem(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getString("tem", "");
 
     }
 
@@ -26,8 +26,8 @@ public class SpUtil {
         return sharedPreferences.getString("loc", "");
     }
 
-    public static void putValue(SharedPreferences sharedPreferences, String loc, int tem) {
-        sharedPreferences.edit().putInt("tem", tem).putString("loc", loc).apply();
+    public static void putValue(SharedPreferences sharedPreferences, String loc, String tem) {
+        sharedPreferences.edit().putString("tem", tem).putString("loc", loc).apply();
     }
 
     public static SharedPreferences getDefault(Context context) {

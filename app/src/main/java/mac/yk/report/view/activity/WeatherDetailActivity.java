@@ -24,7 +24,6 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
     int currentIndex;
     int count;
     boolean flag;
-    WeatherFragment weatherFragment=new WeatherFragment(this, count);;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +76,6 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
         currentIndex = position;
         mv.setCurrentItem(currentIndex);
         fl.setFocus(position);
-        weatherFragment.showWeather(position);
     }
 
     @Override

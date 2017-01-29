@@ -9,11 +9,11 @@ import android.os.Parcelable;
 
 public class Weather implements Parcelable {
     String location;
-    int temperature;
+    String temperature;
     protected Weather() {
     }
 
-    public Weather(String location, int temperature) {
+    public Weather(String location, String temperature) {
         this.location = location;
         this.temperature = temperature;
     }
@@ -22,7 +22,7 @@ public class Weather implements Parcelable {
         @Override
         public Weather createFromParcel(Parcel in) {
 
-            return new Weather(in.readString(),in.readInt());
+            return new Weather(in.readString(),in.readString());
         }
 
         @Override
@@ -36,11 +36,12 @@ public class Weather implements Parcelable {
         return 0;
     }
 
-    public int getTemperature() {
+
+    public String getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(String temperature) {
         this.temperature = temperature;
     }
 
@@ -55,7 +56,7 @@ public class Weather implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(location);
-        dest.writeInt(temperature);
+        dest.writeString(temperature);
     }
 
     @Override
