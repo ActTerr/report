@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import mac.yk.report.R;
 import mac.yk.report.model.bean.Weather;
+import mac.yk.report.model.util.LogUtil;
 import mac.yk.report.model.util.SpUtil;
 
 /**
@@ -51,7 +52,7 @@ public class weatherListActivity extends BaseActivity implements AdapterView.OnI
         Adpater=new ArrayAdapter<Weather>(this,android.R.layout.simple_list_item_1,list);
         lv= (ListView) findViewById(R.id.lv);
         lv.setAdapter(Adpater);
-
+        lv.setOnItemClickListener(this);
     }
 
 
@@ -64,8 +65,10 @@ public class weatherListActivity extends BaseActivity implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent=new Intent(this,WeatherDetailActivity.class);
+        LogUtil.e("main","touch:"+position);
+        Intent intent=new Intent(weatherListActivity.this,WeatherDetailActivity.class);
         intent.putExtra("position",position);
         startActivity(intent);
+        LogUtil.e("main","execute godetail");
     }
 }

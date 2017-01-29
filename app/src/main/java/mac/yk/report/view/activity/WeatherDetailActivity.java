@@ -33,6 +33,7 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
 
     private void initView() {
         currentIndex = getIntent().getIntExtra("position", 0);
+        LogUtil.e("main",currentIndex+":position");
         fl = (FlowIndicator) findViewById(R.id.fl);
         mv = (MyViewPager) findViewById(R.id.mv);
         count = SpUtil.getDefault(this).getInt("count", 0);
@@ -51,8 +52,8 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
         mv.setCurrentItem(currentIndex);
         mv.setOnPageChangeListener(this);
         fl.setCount(count);
-//        fl.setFocus(currentIndex);
-
+        fl.setFocus(currentIndex);
+        SpUtil.getDefault(this).edit().putBoolean("city_selected",true).apply();
     }
 
     @Override
@@ -64,6 +65,7 @@ public class WeatherDetailActivity extends BaseActivity implements ViewPager.OnP
 
             startService(in);
         }
+
     }
 
     @Override

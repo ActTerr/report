@@ -57,7 +57,7 @@ public class FlowIndicator extends View {
 
     /** 设置当前实心圆的索引*/
     public void setFocus(int focus) {
-        misCountChange =false;//禁止回调onMeasure和onLayout，减少测量和布局方法的回调
+        misCountChange =true;//禁止回调onMeasure和onLayout，减少测量和布局方法的回调
         mFocus=focus;
         invalidate();//同样会回调onMeasure、onLayout和onDraw
     }

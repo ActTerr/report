@@ -221,6 +221,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
             case R.id.btn_goList:
                 Intent inte=new Intent(mContext,weatherListActivity.class);
                 startActivity(inte);
+                getActivity().finish();
             default:
                 break;
         }
