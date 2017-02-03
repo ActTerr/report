@@ -21,19 +21,16 @@ import android.widget.TextView;
 
 import mac.yk.report.MyService;
 import mac.yk.report.R;
-import mac.yk.report.util.HttpCallbackListener;
-import mac.yk.report.util.HttpUtil;
+import mac.yk.report.WeatherList.weatherListActivity;
+import mac.yk.report.selectCity.MainActivity;
 import mac.yk.report.util.LogUtil;
 import mac.yk.report.util.SpUtil;
-import mac.yk.report.util.Utility;
-import mac.yk.report.selectCity.MainActivity;
-import mac.yk.report.WeatherList.weatherListActivity;
 
 /**
  * Created by mac-yk on 2017/1/23.
  */
 
-public class WeatherFragment extends Fragment implements View.OnClickListener{
+public class WeatherFragment extends Fragment implements View.OnClickListener,WeatherDetailContract.view{
     private Button btn1,btn2;
     private LinearLayout weatherInfoLayout;
     private TextView cityNameText;
@@ -72,15 +69,18 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
     private Activity mContext;
 
     private int index;
+    private WeatherDetailContract.Presenter presenter;
     public WeatherFragment(Context context,int index) {
         mContext= (Activity) context;
         this.index=index;
+        presenter=new WeatherDetailPresenter(this,index,context);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // 初始化各控件
+        Log.e("main","onCreateView"+index);
         View view = inflater.inflate(R.layout.activity_county, container,false);
         weatherInfoLayout = (LinearLayout) view.findViewById(R.id.weather_info_layout);
         cityNameText = (TextView) view.findViewById(R.id.city_name);
@@ -116,74 +116,54 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
             publishText.setText("同步中...");
             weatherInfoLayout.setVisibility(View.INVISIBLE);
             cityNameText.setVisibility(View.INVISIBLE);
-            queryWeatherCode(countyCode);
+            if (presenter!=null){
+                presenter.queryWeatherCode(countyCode);
+            }
+
         } else {
 // 没有县级代号时就直接显示本地天气
-            showWeather(index);
+            showWeather();
         }
         LogUtil.e("main","fg success");
+
         return view;
     }
 
 
-    public void showWeather(int in) {
-        SharedPreferences prefs = SpUtil.getSp2(mContext, in);
-        cityNameText.setText( prefs.getString("city_name", ""));
-        temp1Text.setText(prefs.getString("temp1", ""));
-        temp2Text.setText(prefs.getString("temp2", ""));
-        String weather=prefs.getString("weather_desp", "");
-        if (weather.equals("晴")){
-            back.setBackground(getResources().getDrawable(R.drawable.a));
-        }
-        weatherDespText.setText(prefs.getString("weather_desp", ""));
-        publishText.setText("今天" + prefs.getString("publish_time", "") + "发布");
-        currentDateText.setText(prefs.getString("current_date", ""));
-        weatherInfoLayout.setVisibility(View.VISIBLE);
-        cityNameText.setVisibility(View.VISIBLE);
+    @Override
+    public void publishSetText(final String s) {
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() { publishText.setText(s);
+            } });
+    }
+    @Override
+    public void showWeather() {
+        mContext.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences prefs = SpUtil.getSp2(mContext, index);
+                cityNameText.setText( prefs.getString("city_name", ""));
+                temp1Text.setText(prefs.getString("temp1", ""));
+                temp2Text.setText(prefs.getString("temp2", ""));
+                String weather=prefs.getString("weather_desp", "");
+                if (weather.equals("晴")){
+                    back.setBackground(getResources().getDrawable(R.drawable.a));
+                }
+                weatherDespText.setText(prefs.getString("weather_desp", ""));
+                publishText.setText("今天" + prefs.getString("publish_time", "") + "发布");
+                currentDateText.setText(prefs.getString("current_date", ""));
+                weatherInfoLayout.setVisibility(View.VISIBLE);
+                cityNameText.setVisibility(View.VISIBLE);
+            }
+        });
+
 //        if (flag){
 //            Intent intent=new Intent(mContext, MyService.class);
 //            mContext.startService(intent);
 //        }
     }
 
-    private void queryWeatherCode(String countyCode) {
-        String address = "http://www.weather.com.cn/data/list3/city" +
-                countyCode + ".xml";
-        queryFromServer(address, "countyCode");
-    }
-
-    private void queryFromServer(String address, final String countyCode) {
-        HttpUtil.sendRequest(address, new HttpCallbackListener() {
-            @Override
-            public void finish(String response) {
-                if ("countyCode".equals(countyCode)){
-                    if (!TextUtils.isEmpty(response)){
-                        String[] array = response.split("\\|");
-                        if (array != null && array.length == 2) {
-                            String weatherCode = array[1];
-                            queryWeatherInfo(weatherCode);
-                        }
-                    }
-                }else if ("weatherCode".equals(countyCode)){
-                    Utility.handleWeatherResponse(mContext,response,index);
-                    mContext.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showWeather(index);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void error(Exception e) {
-                mContext.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() { publishText.setText("同步失败");
-                    } });
-            }
-        });
-    }
 
     @Override
     public void onClick(View v) {
@@ -202,7 +182,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
                         getDefaultSharedPreferences(mContext);
                 String weatherCode = prefs.getString("weather_code", "");
                 if (!TextUtils.isEmpty(weatherCode)) {
-                    queryWeatherInfo(weatherCode);
+                    presenter.queryWeatherInfo(weatherCode);
                 }
                 break;
             case R.id.btn1:
@@ -246,13 +226,12 @@ public class WeatherFragment extends Fragment implements View.OnClickListener{
         sp.edit().putBoolean("flag",flag).commit();
     }
 
-    private void queryWeatherInfo(String weatherCode) {
-        String address = "http://www.weather.com.cn/data/cityinfo/" +
-                weatherCode + ".html";
-        queryFromServer(address, "weatherCode");
+
+
+
+    @Override
+    public void setPresenter(WeatherDetailContract.Presenter presenter) {
 
     }
-
-
 }
 
