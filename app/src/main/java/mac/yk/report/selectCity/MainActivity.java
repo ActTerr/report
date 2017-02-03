@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,19 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mac.yk.report.R;
+import mac.yk.report.WeatherDetail.WeatherDetailActivity;
 import mac.yk.report.base.BaseActivity;
-import mac.yk.report.model.bean.City;
-import mac.yk.report.model.bean.County;
-import mac.yk.report.model.bean.Province;
 import mac.yk.report.model.db.weatherDao;
-import mac.yk.report.util.HttpCallbackListener;
-import mac.yk.report.util.HttpUtil;
 import mac.yk.report.util.LogUtil;
 import mac.yk.report.util.SpUtil;
-import mac.yk.report.util.Utility;
-import mac.yk.report.WeatherDetail.WeatherDetailActivity;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements selectContract.View{
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
@@ -38,34 +30,12 @@ public class MainActivity extends BaseActivity {
     private TextView titleText;
     private ListView listView;
     private ArrayAdapter<String> adapter;
-    private weatherDao weatherDao;
-    private List<String> dataList = new ArrayList<String>();
-    boolean isFromWeatherActivity;
-    /**
-     * 省列表
-     */
-    private List<Province> provinceList;
-    /**
-     * 市列表
-     */
-    private List<City> cityList;
-    /**
-     * 县列表
-     */
-    private List<County> countyList;
-    /**
-     * 选中的省份
-     */
-    private Province selectedProvince;
-    /**
-     * 选中的城市
-     */
-    private City selectedCity;
-    /**
-     * 当前选中的级别
-     */
-    private int currentLevel;
 
+    boolean isFromWeatherActivity;
+
+
+    private selectContract.Presenter presenter;
+    private List<String> dataList = new ArrayList<String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,138 +59,32 @@ public class MainActivity extends BaseActivity {
         listView= (ListView) findViewById(R.id.list_view);
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
-        weatherDao=new weatherDao(this);
+        presenter=new selectPresenter(new weatherDao(getApplicationContext()),this);
+        //不能传Activity的context,如果finish之后presenter里没处理完，就会导致内存泄漏
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (currentLevel==LEVEL_PROVINCE){
-                    selectedProvince=provinceList.get(position);
-                    queryCities();
-                }else if (currentLevel == LEVEL_CITY) {
-                    selectedCity = cityList.get(position);
-                    queryCounties();
-                }else if (currentLevel==LEVEL_COUNTY){
-                    String countyCode = countyList.get(position).getCountyCode();
-                    Intent intent = new Intent(MainActivity.this,
-                            WeatherDetailActivity.class);
-                    intent.putExtra("county_code", countyCode);
-                    SharedPreferences sp = SpUtil.getDefault(getApplicationContext());
-                    int count = sp.getInt("count", 0);
-                    sp.edit().putInt("count",count+1).apply();
-                    startActivity(intent);
-                    LogUtil.e("main","已经启动");
-
-
-                    finish();
-                }
+                presenter.query(position);
 
             }
         });
-        queryProvinces();
+
     }
 
-    private void queryProvinces() {
-        provinceList = weatherDao.loadProvince();
-        if (provinceList!=null&&provinceList.size() > 0) {
-            dataList.clear();
-            for (Province province : provinceList) {
-                dataList.add(province.getProvinceName());
-            }
-            adapter.notifyDataSetChanged(); listView.setSelection(0); titleText.setText("中国"); currentLevel = LEVEL_PROVINCE;
-        } else {
-            queryFromServer(null, "province");
-            Log.e("main","zhixing");
-        } }
-    private void queryCities() {
-        cityList = weatherDao.loadCitys(selectedProvince.getId());
-        if (cityList.size() > 0) {
-            dataList.clear();
-            for (City city : cityList) {
-                dataList.add(city.getCityName());
-            }
-            adapter.notifyDataSetChanged();
-            listView.setSelection(0);
-            titleText.setText(selectedProvince.getProvinceName());
-            currentLevel = LEVEL_CITY;
-        } else {
-            queryFromServer(selectedProvince.getProvinceCode(), "city");
-        } }
-
-    private void queryCounties() {
-        countyList = weatherDao.loadCounty(selectedCity.getId());
-        if (countyList.size() > 0) {
-            dataList.clear();
-            for (County county : countyList) {
-                dataList.add(county.getCountyName());
-            }
-            adapter.notifyDataSetChanged();
-            listView.setSelection(0);
-            titleText.setText(selectedCity.getCityName());
-            currentLevel = LEVEL_COUNTY;
-        } else {
-            queryFromServer(selectedCity.getCityCode(), "county");
-        } }
-
-
-    private void queryFromServer(final String code, final String type) {
-        String address;
-        if (!TextUtils.isEmpty(code)){
-            address = "http://www.weather.com.cn/data/list3/city" + code +".xml";
-        }else {
-            address = "http://www.weather.com.cn/data/list3/city.xml";
-        }
-        showProgressDialog();
-        HttpUtil.sendRequest(address, new HttpCallbackListener() {
-
-            @Override
-            public void finish(String response) {
-            boolean result=false;
-                if ("province".equals(type)) {
-                    result = Utility.handleProvincesResponse(weatherDao, response);
-                } else if ("city".equals(type)) {
-                    result = Utility.handleCityResponse(weatherDao,
-                            response, selectedProvince.getId());
-                } else if ("county".equals(type)) {
-                    result = Utility.handleCountyResponse(weatherDao, response, selectedCity.getId());
-                }
-                if (result){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog();
-                            if ("province".equals(type)) {
-                                queryProvinces();
-                            } else if ("city".equals(type)) {
-                                queryCities();
-                            } else if ("county".equals(type)) {
-                                queryCounties();
-                            }
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void error(Exception e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog();
-                            Toast.makeText(MainActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            }
-        });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.start();
     }
 
-
-    private void closeProgressDialog() {
+    @Override
+    public void closeProgressDialog() {
         if (progressDialog!=null){
             progressDialog.dismiss();
         }
     }
-
-    private void showProgressDialog() {
+    @Override
+    public void showProgressDialog() {
         if (progressDialog==null){
             progressDialog=new ProgressDialog(this);
         }
@@ -228,13 +92,15 @@ public class MainActivity extends BaseActivity {
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
     }
-    public void onBackPressed() {
-        if (currentLevel == LEVEL_COUNTY) {
-            queryCities();
-        } else if (currentLevel == LEVEL_CITY) {
-            queryProvinces();
-        } else {
 
+    @Override
+    public void onBackPressed() {
+        int currentLevel=presenter.getCurrentLevel();
+        if (currentLevel == LEVEL_COUNTY) {
+            presenter.queryCities();
+        } else if (currentLevel == LEVEL_CITY) {
+            presenter.queryProvinces();
+        } else {
             if (isFromWeatherActivity) {
                     Intent intent = new Intent(this, WeatherDetailActivity.class);
                     startActivity(intent);
@@ -243,4 +109,46 @@ public class MainActivity extends BaseActivity {
 
         } }
 
+    @Override
+    public void showError(Exception e) {
+        closeProgressDialog();
+        Toast.makeText(MainActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setSelection(int i) {
+        listView.setSelection(i);
+    }
+
+    @Override
+    public void refresh(List<String> list) {
+        dataList=list;
+        adapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public void setText(String s) {
+        titleText.setText(s);
+    }
+
+    @Override
+    public void gotoWeatherDetail(String countyCode) {
+        Intent intent = new Intent(MainActivity.this,
+                WeatherDetailActivity.class);
+        intent.putExtra("county_code", countyCode);
+        SharedPreferences sp = SpUtil.getDefault(getApplicationContext());
+        int count = sp.getInt("count", 0);
+        sp.edit().putInt("count", count + 1).apply();
+        startActivity(intent);
+        LogUtil.e("main", "已经启动");
+
+
+        finish();
+    }
+
+    @Override
+    public void setPresenter(selectContract.Presenter presenter) {
+        this.presenter=presenter;
+    }
 }
