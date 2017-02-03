@@ -32,7 +32,7 @@ public class selectPresenter implements selectContract.Presenter {
     public selectPresenter(@NonNull weatherDao dao, @NonNull selectContract.View view) {
         wdao = checkNotNull(dao, "dao not null");
         mview = checkNotNull(view, "view not null");
-        mview.setPresenter(this); //构造时调用set方法，将presenter传给view
+//        mview.setPresenter(this); //构造时调用set方法，将presenter传给view
     }
 
     private List<String> dataList = new ArrayList<String>();

@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity implements selectContract.View{
 
 
     private selectContract.Presenter presenter;
-    private List<String> dataList = new ArrayList<String>();
+    private List<String> dataList ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +57,7 @@ public class MainActivity extends BaseActivity implements selectContract.View{
         progressDialog=new ProgressDialog(this);
         titleText= (TextView) findViewById(R.id.title_text);
         listView= (ListView) findViewById(R.id.list_view);
+        dataList=new ArrayList<>();
         adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
         presenter=new selectPresenter(new weatherDao(getApplicationContext()),this);
@@ -116,14 +117,23 @@ public class MainActivity extends BaseActivity implements selectContract.View{
     }
 
     @Override
-    public void setSelection(int i) {
+    public void setSelection(final int i) {
+        sel(i);
+
+
+    }
+    private void sel(int i){
         listView.setSelection(i);
     }
-
+    private void change(){
+        adapter.notifyDataSetChanged();
+    }
     @Override
     public void refresh(List<String> list) {
         dataList=list;
-        adapter.notifyDataSetChanged();
+        LogUtil.e("main",dataList.toString());
+        change();
+
     }
 
 
