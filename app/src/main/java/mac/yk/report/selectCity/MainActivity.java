@@ -118,28 +118,43 @@ public class MainActivity extends BaseActivity implements selectContract.View{
 
     @Override
     public void setSelection(final int i) {
-        sel(i);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listView.setSelection(i);
+            }
+        });
 
+    }
 
-    }
-    private void sel(int i){
-        listView.setSelection(i);
-    }
-    private void change(){
-        adapter.notifyDataSetChanged();
-    }
     @Override
     public void refresh(List<String> list) {
-        dataList=list;
+        dataList.clear();
+        if (dataList.size()==0){
+            dataList.addAll(list);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+
         LogUtil.e("main",dataList.toString());
-        change();
+
 
     }
 
 
     @Override
-    public void setText(String s) {
-        titleText.setText(s);
+    public void setText(final String s) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                titleText.setText(s);
+            }
+        });
+
     }
 
     @Override
