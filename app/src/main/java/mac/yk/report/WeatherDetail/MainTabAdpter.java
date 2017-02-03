@@ -1,4 +1,4 @@
-package mac.yk.report.view.adapter;
+package mac.yk.report.WeatherDetail;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

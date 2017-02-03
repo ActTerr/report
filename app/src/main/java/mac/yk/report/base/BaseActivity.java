@@ -1,4 +1,4 @@
-package mac.yk.report.view.activity;
+package mac.yk.report.base;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

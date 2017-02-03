@@ -1,4 +1,4 @@
-package mac.yk.report.view.activity;
+package mac.yk.report.WeatherDetail;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,11 +21,13 @@ import android.widget.TextView;
 
 import mac.yk.report.MyService;
 import mac.yk.report.R;
-import mac.yk.report.model.util.HttpCallbackListener;
-import mac.yk.report.model.util.HttpUtil;
-import mac.yk.report.model.util.LogUtil;
-import mac.yk.report.model.util.SpUtil;
-import mac.yk.report.model.util.Utility;
+import mac.yk.report.util.HttpCallbackListener;
+import mac.yk.report.util.HttpUtil;
+import mac.yk.report.util.LogUtil;
+import mac.yk.report.util.SpUtil;
+import mac.yk.report.util.Utility;
+import mac.yk.report.selectCity.MainActivity;
+import mac.yk.report.WeatherList.weatherListActivity;
 
 /**
  * Created by mac-yk on 2017/1/23.

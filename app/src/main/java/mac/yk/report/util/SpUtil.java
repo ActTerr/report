@@ -1,4 +1,4 @@
-package mac.yk.report.model.util;
+package mac.yk.report.util;
 
 import android.app.Activity;
 import android.content.Context;

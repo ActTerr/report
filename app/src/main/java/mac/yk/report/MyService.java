@@ -11,10 +11,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import mac.yk.report.model.util.HttpCallbackListener;
-import mac.yk.report.model.util.HttpUtil;
-import mac.yk.report.model.util.SpUtil;
-import mac.yk.report.model.util.Utility;
+import mac.yk.report.util.HttpCallbackListener;
+import mac.yk.report.util.HttpUtil;
+import mac.yk.report.util.SpUtil;
+import mac.yk.report.util.Utility;
 
 /**
  * Created by mac-yk on 2017/1/24.

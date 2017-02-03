@@ -1,4 +1,4 @@
-package mac.yk.report.model.util;
+package mac.yk.report.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

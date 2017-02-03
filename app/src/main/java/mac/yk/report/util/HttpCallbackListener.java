@@ -1,4 +1,4 @@
-package mac.yk.report.model.util;
+package mac.yk.report.util;
 
 /**
  * Created by mac-yk on 2017/1/23.

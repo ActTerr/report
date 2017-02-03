@@ -1,4 +1,4 @@
-package mac.yk.report.view.activity;
+package mac.yk.report.WeatherDetail;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,11 +7,11 @@ import android.support.v4.view.ViewPager;
 
 import mac.yk.report.MyService;
 import mac.yk.report.R;
-import mac.yk.report.model.util.LogUtil;
-import mac.yk.report.model.util.SpUtil;
-import mac.yk.report.view.adapter.MainTabAdpter;
-import mac.yk.report.view.widget.FlowIndicator;
-import mac.yk.report.view.widget.MyViewPager;
+import mac.yk.report.base.BaseActivity;
+import mac.yk.report.util.LogUtil;
+import mac.yk.report.util.SpUtil;
+import mac.yk.report.widget.FlowIndicator;
+import mac.yk.report.widget.MyViewPager;
 
 /**
  * Created by mac-yk on 2017/1/28.

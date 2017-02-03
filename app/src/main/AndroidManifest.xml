@@ -8,15 +8,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.MainActivity">
+        <activity android:name=".selectCity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.WeatherDetailActivity"/>
-        <activity android:name=".view.activity.weatherListActivity"/>
+        <activity android:name=".WeatherDetail.WeatherDetailActivity"/>
+        <activity android:name=".WeatherList.weatherListActivity"/>
         <service android:name=".MyService"/>
         <receiver android:name=".MyReceiver"/>
     </application>

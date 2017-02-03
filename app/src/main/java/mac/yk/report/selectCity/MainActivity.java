@@ -1,4 +1,4 @@
-package mac.yk.report.view.activity;
+package mac.yk.report.selectCity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -18,15 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mac.yk.report.R;
+import mac.yk.report.base.BaseActivity;
 import mac.yk.report.model.bean.City;
 import mac.yk.report.model.bean.County;
 import mac.yk.report.model.bean.Province;
 import mac.yk.report.model.db.weatherDao;
-import mac.yk.report.model.util.HttpCallbackListener;
-import mac.yk.report.model.util.HttpUtil;
-import mac.yk.report.model.util.LogUtil;
-import mac.yk.report.model.util.SpUtil;
-import mac.yk.report.model.util.Utility;
+import mac.yk.report.util.HttpCallbackListener;
+import mac.yk.report.util.HttpUtil;
+import mac.yk.report.util.LogUtil;
+import mac.yk.report.util.SpUtil;
+import mac.yk.report.util.Utility;
+import mac.yk.report.WeatherDetail.WeatherDetailActivity;
 
 public class MainActivity extends BaseActivity {
     public static final int LEVEL_PROVINCE = 0;

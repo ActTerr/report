@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <mac.yk.report.view.widget.MyViewPager
+    <mac.yk.report.widget.MyViewPager
         android:id="@+id/mv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="50dp">
 
-    </mac.yk.report.view.widget.MyViewPager>
-    <mac.yk.report.view.widget.FlowIndicator
+    </mac.yk.report.widget.MyViewPager>
+    <mac.yk.report.widget.FlowIndicator
 
         android:id="@+id/fl"
         android:layout_width="wrap_content"

@@ -1,4 +1,4 @@
-package mac.yk.report.view.widget;
+package mac.yk.report.widget;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

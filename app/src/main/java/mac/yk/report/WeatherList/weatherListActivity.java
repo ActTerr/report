@@ -1,4 +1,4 @@
-package mac.yk.report.view.activity;
+package mac.yk.report.WeatherList;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,9 +13,12 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import mac.yk.report.R;
+import mac.yk.report.WeatherDetail.WeatherDetailActivity;
+import mac.yk.report.base.BaseActivity;
 import mac.yk.report.model.bean.Weather;
-import mac.yk.report.model.util.LogUtil;
-import mac.yk.report.model.util.SpUtil;
+import mac.yk.report.util.LogUtil;
+import mac.yk.report.util.SpUtil;
+import mac.yk.report.selectCity.MainActivity;
 
 /**
  * Created by mac-yk on 2017/1/29.
