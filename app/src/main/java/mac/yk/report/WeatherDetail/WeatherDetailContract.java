@@ -16,5 +16,8 @@ public interface WeatherDetailContract {
         void queryWeatherCode(String countyCode);
         void queryFromServer(String address, String s);
         void queryWeatherInfo(String weatherCode);
+        void handleResponse(String response);
+        void pusherror();
+        void showWeather();
     }
 }

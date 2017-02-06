@@ -74,6 +74,7 @@ public class WeatherFragment extends Fragment implements View.OnClickListener,We
         mContext= (Activity) context;
         this.index=index;
         presenter=new WeatherDetailPresenter(this,index,context);
+
     }
 
     @Nullable
